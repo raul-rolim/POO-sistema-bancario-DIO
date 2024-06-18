@@ -1,35 +1,31 @@
 from abc import ABC, abstractmethod
 
-class Transacao(ABC):
-    @abstractmethod
-    def registrar(self, conta):
-        pass
-
 class Historico:
+    def __init__(self):
+        self._historico = ""
 
     def adicionar_transacao(self, transacao):
-        pass
-class Deposito(Transacao):
+        self._historico += str(transacao)
+class Deposito:
 
     def __init__(self, valor):
         self._valor = valor
 
     @property
     def valor(self):
+        self._valor = float(input("Insira o valor que deseja depositar: "))
         return self._valor
-    def registrar(self, conta):
-        pass
 
-class Saque(Transacao):
+
+class Saque:
     def __init__(self, valor):
         self._valor = valor
 
     @property
     def valor(self):
+        self._valor = float(input("Insira o valor que deseja sacar: "))
         return self._valor
 
-    def registrar(self, conta):
-        pass
 
 class Conta(ABC):
     def __init__(self, cliente):
@@ -55,22 +51,33 @@ class ContaCorrente(Conta):
         self._limite_saques = 3
 
     def depositar(self, valor):
-        #Inserir o registro da transação no histórico
-        valor_valido = valor > 0
-        if valor_valido:
+        deposito_valido = valor > 0
+        if deposito_valido:
             self._saldo += valor
+            self._historico.adicionar_transacao(f"\nDepósito: R${self._saldo:.2f}")
             print("Depósito realizado com sucesso")
             return True
         else:
             print("O processo falhou, pois o valor inserido é inválido")
             return False
-    #é um método que pode ser usado sem necessidade de instanciar
     @classmethod
     def nova_conta(cls, cliente, numero):
         return cls(cliente, numero)
 
     def sacar(self, valor):
-        pass
+        limite_disponivel = self._limite_saques != 0
+        saque_valido = (valor <= self._limite) and (valor > 0)
+
+        if saque_valido and limite_disponivel:
+            self._saldo -= valor
+            self._historico.adicionar_transacao(f"\nSaque: R${self._saldo:.2f}")
+            print("Saque realizado com sucesso")
+            return True
+        elif not limite_disponivel:
+            print("Você atingiu o limite de saques diários")
+            return False
+        else:
+            print("O valor inserido é inválido")
 
 class PessoaFisica(ABC):
     def __init__(self, nome, cpf, data_nascimento):
@@ -85,7 +92,14 @@ class Cliente(PessoaFisica):
         self._contas = []
 
     def realizar_transacao(self, conta, transacao):
-        pass
+        if transacao == Deposito:
+            conta.depositar(transacao.valor)
+        elif transacao == Saque:
+            conta.sacar(transacao.valor)
+        else:
+            print("Transação inválida. Tente Novamente!")
 
     def adicionar_conta(self, conta):
-        pass
+        self._contas.append(conta)
+        print("Conta adicionada com sucesso")
+        return True
