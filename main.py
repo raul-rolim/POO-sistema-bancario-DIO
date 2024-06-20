@@ -151,10 +151,10 @@ class Menu:
                 case 1:
                     # nome, cpf, data_nascimento, endereco, senha = Cliente.nova_conta()
                     nome = "teste"
-                    cpf = "12345"
+                    cpf = "123456"
                     data_nascimento = "01/01/2021"
                     endereco = "adqwqwdqw"
-                    senha = "12345"
+                    senha = "123456"
                     novo_cliente = Cliente(nome, cpf, data_nascimento, endereco, senha)
                     lista_de_usuarios.adicionar_usuario(novo_cliente)
 
