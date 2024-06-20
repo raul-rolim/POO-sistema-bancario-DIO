@@ -16,7 +16,6 @@ class Deposito:
         self._valor = float(input("Insira o valor que deseja depositar: "))
         return self._valor
 
-
 class Saque:
     def __init__(self, valor):
         self._valor = valor
@@ -62,6 +61,7 @@ class ContaCorrente(Conta):
             return False
     @classmethod
     def nova_conta(cls, cliente, numero):
+        print("Conta criada com sucesso")
         return cls(cliente, numero)
 
     def sacar(self, valor):
@@ -86,11 +86,19 @@ class PessoaFisica(ABC):
         self._data_nascimento = data_nascimento
 
 class Cliente(PessoaFisica):
-    def __init__(self, nome, cpf, data_nascimento, endereco):
+    def __init__(self, nome, cpf, data_nascimento, endereco, senha):
         super().__init__(nome, cpf, data_nascimento)
         self._endereco = endereco
+        self._senha = senha
         self._contas = []
 
+    @property
+    def cpf(self):
+        return self._cpf
+
+    @property
+    def senha(self):
+        return self._senha
     def realizar_transacao(self, conta, transacao):
         if transacao == Deposito:
             conta.depositar(transacao.valor)
@@ -103,3 +111,72 @@ class Cliente(PessoaFisica):
         self._contas.append(conta)
         print("Conta adicionada com sucesso")
         return True
+
+    @classmethod
+    def nova_conta(cls):
+        nome = input("Insira seu nome: ")
+        cpf = input("Insira seu CPF: ")
+        data_nascimento = input("Insira sua data de nascimento: ")
+        endereco = input("Insira seu endereco: ")
+        senha = input("Insira uma senha para a conta: ")
+        return nome, cpf, data_nascimento, endereco, senha
+
+    def __repr__(self):
+        return (f"Nome: {self._nome}, CPF: {self._cpf}, Nascimento: {self._data_nascimento}, "
+                f"Endereço: {self._endereco}, Senha: {self._senha}\n")
+
+class Usuarios:
+    def __init__(self):
+        self._lista_usuarios = []
+
+    def adicionar_usuario(self, usuario):
+        self._lista_usuarios.append(usuario)
+        print("Usuário criado com sucesso")
+        return True
+
+    def listar(self):
+        return self._lista_usuarios
+
+    @property
+    def lista_usuarios(self):
+        return self._lista_usuarios
+class Menu:
+    def menu_inicial(self):
+        lista_de_usuarios = Usuarios()
+        print("Menu principal")
+        while True:
+            opcoes = "1 - Criar Usuário\n2 - Criar Conta Corrente\n3 - Fazer Login\n4 - Sair\nEscolha: "
+            escolha = int(input(opcoes))
+            match escolha:
+                case 1:
+                    # nome, cpf, data_nascimento, endereco, senha = Cliente.nova_conta()
+                    nome = "teste"
+                    cpf = "12345"
+                    data_nascimento = "01/01/2021"
+                    endereco = "adqwqwdqw"
+                    senha = "12345"
+                    novo_cliente = Cliente(nome, cpf, data_nascimento, endereco, senha)
+                    lista_de_usuarios.adicionar_usuario(novo_cliente)
+
+                case 2:
+                    nova_conta_corrente = ContaCorrente.nova_conta(lista_de_usuarios.lista_usuarios[0], len(lista_de_usuarios.lista_usuarios))
+                    cliente = lista_de_usuarios.lista_usuarios[0]
+                    cliente.adicionar_conta(nova_conta_corrente)
+
+                case 3:
+                    cpf = input("Insira o CPF da sua conta: ")
+                    senha = input("Insira sua senha: ")
+                    for conta in lista_de_usuarios.lista_usuarios:
+                        if conta.cpf == cpf and conta.senha == senha:
+                            print("Bem Vindo")
+
+                    print("Tente novamente")
+
+                case 4:
+                    print("Obrigado por utilizar o nosso serviço!\nAté a próxima!")
+                    exit(0)
+                case 12:
+                    print(lista_de_usuarios.listar())
+
+menu = Menu()
+menu.menu_inicial()
