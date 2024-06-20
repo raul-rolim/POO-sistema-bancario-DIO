@@ -4,6 +4,10 @@ class Historico:
     def __init__(self):
         self._historico = ""
 
+    @property
+    def historico(self):
+        return self._historico
+
     def adicionar_transacao(self, transacao):
         self._historico += str(transacao)
 class Deposito:
@@ -48,6 +52,14 @@ class ContaCorrente(Conta):
         self._historico = Historico()
         self._limite = 500
         self._limite_saques = 3
+
+    @property
+    def saldo(self):
+        return self._saldo
+
+    @property
+    def historico(self):
+        return self._historico
 
     def depositar(self, valor):
         deposito_valido = valor > 0
@@ -99,13 +111,10 @@ class Cliente(PessoaFisica):
     @property
     def senha(self):
         return self._senha
-    def realizar_transacao(self, conta, transacao):
-        if transacao == Deposito:
-            conta.depositar(transacao.valor)
-        elif transacao == Saque:
-            conta.sacar(transacao.valor)
-        else:
-            print("Transação inválida. Tente Novamente!")
+
+    @property
+    def contas(self):
+        return self._contas
 
     def adicionar_conta(self, conta):
         self._contas.append(conta)
@@ -169,6 +178,7 @@ class Menu:
                     for conta in lista_de_usuarios.lista_usuarios:
                         if conta.cpf == cpf and conta.senha == senha:
                             print("Bem Vindo")
+                            menu.menu_principal(conta)
 
                     print("Tente novamente")
 
@@ -177,6 +187,23 @@ class Menu:
                     exit(0)
                 case 12:
                     print(lista_de_usuarios.listar())
+    def menu_principal(self, login):
+        menu_opcoes = "1 - Depositar\n2 - Sacar\n3 - Verificar Extrato\n4 - Sair\nEscolha: "
+        while True:
+            print(f"\nSaldo: R${login.contas[0].saldo:.2f}")
+            opcao = int(input(menu_opcoes))
+            match opcao:
+                case 1:
+                    valor = float(input("Insira o valor que deseja depositar: "))
+                    login.contas[0].depositar(valor)
+                case 2:
+                    valor = float(input("Insira o valor que deseja sacar: "))
+                    login.contas[0].sacar(valor)
+                case 3:
+                    print(login.contas[0].historico.historico)
+                case 4:
+                    print("Fim da Sessão")
+                    break
 
 menu = Menu()
 menu.menu_inicial()
